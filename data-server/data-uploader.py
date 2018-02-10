@@ -36,11 +36,11 @@ logger.info('data-uploader started')
 parser = argparse.ArgumentParser(description='Device Data Uploader.', parents=[tools.argparser])
 parser.add_argument('--dir', nargs=1, type=str, required=True, help='directory to read messages from')
 parser.add_argument('--spreadsheetid', nargs=1, type=str, required=True, help='Google Sheet to write data to')
-parser.add_argument('--googleclientsecrect', nargs=1, type=str, required=True, help='Google Sheet to write data to')
+parser.add_argument('--googleclientsecret', nargs=1, type=str, required=True, help='Google Sheet to write data to')
 args = parser.parse_args()
 mdir = args.dir[0]
 spreadsheetId = args.spreadsheetid[0]
-clientSecretFile = args.googleclientsecrect[0]
+clientSecretFile = args.googleclientsecret[0]
 
 # Google Client
 home_dir = os.path.expanduser('~')
