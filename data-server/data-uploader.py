@@ -84,13 +84,17 @@ values = []
 for file in files:
     logger.debug('Open file ' + file)
     f = open(normpath(join(mdir, file)), 'r')
-    data = json.load(f)
-    logger.debug('Loaded json ' + str(data))
+    try:
+        data = json.load(f)
+        logger.debug('Loaded json ' + str(data))
+    except ValueError as e:
+        logger.error(str(e) + ' ' + file)
+    else:    
+        row = [None, None, None, None, None, None, None]
+        for key in data:
+            row[INDEXES[key]] = data[key]
+        values.append(row)
     f.close()
-    row = [None, None, None, None, None, None, None]
-    for key in data:
-        row[INDEXES[key]] = data[key]
-    values.append(row)
 logger.debug(values)
 
 # Save sensor data to Google Sheet
