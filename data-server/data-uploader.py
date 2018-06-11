@@ -14,6 +14,7 @@ from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
 
+
 # Constants
 INDEXES = {
     'timestamp': 0,
@@ -35,10 +36,12 @@ logger.info('data-uploader started')
 # Argument Parser
 parser = argparse.ArgumentParser(description='Device Data Uploader.', parents=[tools.argparser])
 parser.add_argument('--dir', nargs=1, type=str, required=True, help='directory to read messages from')
+parser.add_argument('--cachedir', nargs=1, type=str, required=True, help='directory to cache messages')
 parser.add_argument('--spreadsheetid', nargs=1, type=str, required=True, help='Google Sheet to write data to')
 parser.add_argument('--googleclientsecret', nargs=1, type=str, required=True, help='Google Sheet to write data to')
 args = parser.parse_args()
 mdir = args.dir[0]
+cdir = args.cachedir[0]
 spreadsheetId = args.spreadsheetid[0]
 clientSecretFile = args.googleclientsecret[0]
 
@@ -79,7 +82,35 @@ if len(files) == 0:
 else:
     logger.info(str(len(files)) + ' files found')
 
+# Search for cached files
+logger.debug('Walking to cache dir ' + cdir)
+cfiles = []
+for (cdirpath, cdirnames, cfilenames) in walk(cdir):
+    cfiles.extend(cfilenames)
+    break
+logger.debug('Found files: ' + str(cfiles))
+if len(cfiles) == 0:
+    logger.info('No cached files found')
+else:
+    logger.info(str(len(cfiles)) + ' cached files found')
+
+# read cached data from cached data dir
+cvalues = {}
+for cfile in cfiles:
+    logger.debug('Open file ' + cfile)
+    f = open(normpath(join(cdir, cfile)), 'r')
+    try:
+        data = json.load(f)
+        logger.debug('Loaded cached json ' + str(data))
+    except ValueError as e:
+        logger.error(str(e) + ' ' + cfile)
+    else:
+        cvalues[data['deviceId']] = data
+    f.close()
+logger.debug(cvalues)
+
 # Read sensor data in JSON format from found files
+from shutil import copyfile
 values = []
 for file in files:
     logger.debug('Open file ' + file)
@@ -87,6 +118,29 @@ for file in files:
     try:
         data = json.load(f)
         logger.debug('Loaded json ' + str(data))
+        deviceId = data['deviceId']
+        cdata = cvalues.get(deviceId, None)
+        if cdata is not None:
+            if deviceId == '0':
+                if int(int(data['distance'])/100) - int(int(cdata['distance'])/100) == 0:
+                    logger.debug('Ignore sensor data. New data: ' + str(data) + ', cached data: ' + str(cdata))
+                    continue
+            elif deviceId == '1' or deviceId == '2':
+                deltaTemp = int(data['temperature']) - int(cdata['temperature'])
+                deltaHum = int(data['humidity']) - int(cdata['humidity'])
+                if 2 > deltaTemp > -2 and 2 > deltaHum > -2:
+                    logger.debug('Ignore sensor data. New data: ' + str(data) + ', cached data: ' + str(cdata))
+                    continue
+            elif deviceId == '3':
+                deltaTemp = int(data['temperature']) - int(cdata['temperature'])
+                deltaPress = int(data['pressure']) - int(cdata['pressure'])
+                if 2 > deltaTemp > -2 and deltaPress == 0:
+                    logger.debug('Ignore sensor data. New data: ' + str(data) + ', cached data: ' + str(cdata))
+                    continue
+            else:
+                logger.error('Unsupported deviceId in cached data: ' + deviceId)
+        cvalues[data['deviceId']] = data
+        copyfile(normpath(join(mdir, file)), normpath(join(cdir, deviceId + '.json')))
     except ValueError as e:
         logger.error(str(e) + ' ' + file)
     else:    
