@@ -159,12 +159,15 @@ for file in files:
 logger.debug(values)
 
 # Save sensor data to Google Sheet
-result = service.spreadsheets().values().append(
-    spreadsheetId=spreadsheetId, range='Data!A2:G',
-    valueInputOption='USER_ENTERED', body={'values': values}).execute()
-updates = result.get('updates')
-logger.info('{0} cells in {1} rows appended to Google Sheet'
-            .format(updates.get('updatedCells'), updates.get('updatedRows')))
+if len(values) > 0:
+    result = service.spreadsheets().values().append(
+        spreadsheetId=spreadsheetId, range='Data!A2:G',
+        valueInputOption='USER_ENTERED', body={'values': values}).execute()
+    updates = result.get('updates')
+    logger.info('{0} cells in {1} rows appended to Google Sheet'
+                .format(updates.get('updatedCells'), updates.get('updatedRows')))
+else:
+    logger.info('Nothing new to submit to Google Sheet')
 
 # Delete files
 for file in files:
