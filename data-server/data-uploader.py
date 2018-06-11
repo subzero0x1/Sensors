@@ -121,26 +121,26 @@ for file in files:
         deviceId = data['deviceId']
         cdata = cvalues.get(deviceId, None)
         if cdata is not None:
-            if deviceId == '0':
+            if deviceId == 0:
                 if int(int(data['distance'])/100) - int(int(cdata['distance'])/100) == 0:
                     logger.debug('Ignore sensor data. New data: ' + str(data) + ', cached data: ' + str(cdata))
                     continue
-            elif deviceId == '1' or deviceId == '2':
+            elif deviceId == 1 or deviceId == 2:
                 deltaTemp = int(data['temperature']) - int(cdata['temperature'])
                 deltaHum = int(data['humidity']) - int(cdata['humidity'])
                 if 2 > deltaTemp > -2 and 2 > deltaHum > -2:
                     logger.debug('Ignore sensor data. New data: ' + str(data) + ', cached data: ' + str(cdata))
                     continue
-            elif deviceId == '3':
+            elif deviceId == 3:
                 deltaTemp = int(data['temperature']) - int(cdata['temperature'])
                 deltaPress = int(data['pressure']) - int(cdata['pressure'])
                 if 2 > deltaTemp > -2 and deltaPress == 0:
                     logger.debug('Ignore sensor data. New data: ' + str(data) + ', cached data: ' + str(cdata))
                     continue
             else:
-                logger.error('Unsupported deviceId in cached data: ' + deviceId)
+                logger.error('Unsupported deviceId in cached data: ' + str(deviceId))
         cvalues[data['deviceId']] = data
-        copyfile(normpath(join(mdir, file)), normpath(join(cdir, deviceId + '.json')))
+        copyfile(normpath(join(mdir, file)), normpath(join(cdir, str(deviceId) + '.json')))
     except ValueError as e:
         logger.error(str(e) + ' ' + file)
     else:    
