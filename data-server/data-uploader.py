@@ -129,13 +129,13 @@ for file in files:
                 deltaTemp = int(data['temperature']) - int(cdata['temperature'])
                 deltaHum = int(data['humidity']) - int(cdata['humidity'])
                 deltaRain = int(data['rain']) - int(cdata['rain'])
-                if 2 > deltaTemp > -2 and 6 > deltaHum > -6 and deltaRain == 0:
+                if 2 > deltaTemp > -2 and 10 > deltaHum > -10 and deltaRain == 0:
                     logger.debug('Ignore sensor data. New data: ' + str(data) + ', cached data: ' + str(cdata))
                     continue
             elif deviceId == 2:
                 deltaTemp = int(data['temperature']) - int(cdata['temperature'])
                 deltaHum = int(data['humidity']) - int(cdata['humidity'])
-                if 2 > deltaTemp > -2 and 6 > deltaHum > -6:
+                if 2 > deltaTemp > -2 and 10 > deltaHum > -10:
                     logger.debug('Ignore sensor data. New data: ' + str(data) + ', cached data: ' + str(cdata))
                     continue
             elif deviceId == 3:
