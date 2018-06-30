@@ -126,10 +126,10 @@ for file in files:
                     logger.debug('Ignore sensor data. New data: ' + str(data) + ', cached data: ' + str(cdata))
                     continue
             elif deviceId == 1:
-                #deltaTemp = int(data['temperature']) - int(cdata['temperature'])
+                deltaTemp = int(data['temperature']) - int(cdata['temperature'])
                 #deltaHum = int(data['humidity']) - int(cdata['humidity'])
                 deltaRain = int(data['rain']) - int(cdata['rain'])
-                if deltaRain == 0: # 2 > deltaTemp > -2 and 10 > deltaHum > -10 and
+                if 10 > deltaTemp > -10 and deltaRain == 0: # 2 > deltaTemp > -2 and 10 > deltaHum > -10 and
                     logger.debug('Ignore sensor data. New data: ' + str(data) + ', cached data: ' + str(cdata))
                     continue
             elif deviceId == 2:
