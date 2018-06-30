@@ -122,20 +122,20 @@ for file in files:
         cdata = cvalues.get(deviceId, None)
         if cdata is not None:
             if deviceId == 0:
-                if int(int(data['distance'])/100) - int(int(cdata['distance'])/100) == 0:
+                if int(int(data['distance'])/10) - int(int(cdata['distance'])/10) == 0:
                     logger.debug('Ignore sensor data. New data: ' + str(data) + ', cached data: ' + str(cdata))
                     continue
             elif deviceId == 1:
-                deltaTemp = int(data['temperature']) - int(cdata['temperature'])
-                deltaHum = int(data['humidity']) - int(cdata['humidity'])
+                #deltaTemp = int(data['temperature']) - int(cdata['temperature'])
+                #deltaHum = int(data['humidity']) - int(cdata['humidity'])
                 deltaRain = int(data['rain']) - int(cdata['rain'])
-                if 2 > deltaTemp > -2 and 10 > deltaHum > -10 and deltaRain == 0:
+                if deltaRain == 0: # 2 > deltaTemp > -2 and 10 > deltaHum > -10 and
                     logger.debug('Ignore sensor data. New data: ' + str(data) + ', cached data: ' + str(cdata))
                     continue
             elif deviceId == 2:
                 deltaTemp = int(data['temperature']) - int(cdata['temperature'])
                 deltaHum = int(data['humidity']) - int(cdata['humidity'])
-                if 2 > deltaTemp > -2 and 10 > deltaHum > -10:
+                if 5 > deltaTemp > -5 and 10 > deltaHum > -10:
                     logger.debug('Ignore sensor data. New data: ' + str(data) + ', cached data: ' + str(cdata))
                     continue
             elif deviceId == 3:
