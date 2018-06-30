@@ -141,7 +141,7 @@ for file in files:
             elif deviceId == 3:
                 deltaTemp = int(data['temperature']) - int(cdata['temperature'])
                 deltaPress = int(data['pressure']) - int(cdata['pressure'])
-                if 2 > deltaTemp > -2 and 2 > deltaPress > -2:
+                if 3 > deltaTemp > -3 and 2 > deltaPress > -2:
                     logger.debug('Ignore sensor data. New data: ' + str(data) + ', cached data: ' + str(cdata))
                     continue
             else:
